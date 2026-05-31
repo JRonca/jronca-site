@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { useTranslations } from '../../i18n/ui';
+import { getReposData } from '../../utils/github';
+
+const lang = 'pt';
+const t = useTranslations(lang);
+
+const projects = (await getCollection('projetos', ({ id }) => {
+  return id.startsWith('pt/');
+})).sort((a, b) => b.data.year - a.data.year);
+
+const repoNames = projects.map(p => p.data.repo).filter((r): r is string => !!r);
+const githubStats = await getReposData(repoNames);
+---
+
+<BaseLayout 
+  title={t('nav.projetos')} 
+  description="Portfólio de projetos desenvolvidos por Ronca, incluindo ferramentas de DevOps, DevSecOps e segurança." 
+  lang={lang}
+>
+  <div class="projects-container">
+    <header class="page-header">
+      <h1 class="page-title">{t('nav.projetos')}</h1>
+      <p class="page-subtitle">
+        Projetos de código aberto, utilitários de linha de comando e experimentações em sistemas e infraestrutura.
+      </p>
+    </header>
+
+    <div class="projects-grid">
+      {projects.map((project, index) => (
+        <ProjectCard 
+          project={project} 
+          index={index} 
+          gitHubData={project.data.repo ? githubStats[project.data.repo] : undefined} 
+          lang={lang} 
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .projects-container {
+    width: 100%;
+  }
+
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-title {
+    margin-bottom: var(--space-2);
+  }
+
+  .page-subtitle {
+    color: var(--color-dim);
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

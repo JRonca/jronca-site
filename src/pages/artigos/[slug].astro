@@ -1,0 +1,163 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { useTranslations, useTranslatedPath } from '../../i18n/ui';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('artigos', ({ id, data }) => {
+    return id.startsWith('pt/') && !data.draft;
+  });
+
+  return articles.map(article => {
+    const slug = article.id.split('/').pop()?.replace(/\.(md|mdx)$/, '') || article.id;
+    return {
+      params: { slug },
+      props: { article },
+    };
+  });
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+
+const lang = 'pt';
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+};
+
+const getReadingTime = (body: string = '') => {
+  const wordsPerMinute = 200;
+  const wordCount = body.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const time = Math.ceil(wordCount / wordsPerMinute);
+  return `${time} ${t('article.readingTime')}`;
+};
+
+const readingTime = getReadingTime(article.body);
+---
+
+<BaseLayout 
+  title={article.data.title} 
+  description={article.data.description} 
+  lang={lang}
+  type="article"
+>
+  <article class="article-container">
+    <a href={translatePath('/artigos')} class="back-link">
+      {t('article.back')}
+    </a>
+
+    <header class="article-header">
+      <div class="header-meta">
+        <span class="category-tag">{article.data.category}</span>
+        <span class="separator">·</span>
+        <time datetime={article.data.pubDate.toISOString()}>
+          {formatDate(article.data.pubDate)}
+        </time>
+        <span class="separator">·</span>
+        <span class="reading-time">{readingTime}</span>
+      </div>
+      
+      <h1 class="article-title">{article.data.title}</h1>
+      
+      {article.data.description && (
+        <p class="article-lead">{article.data.description}</p>
+      )}
+      
+      <div class="header-divider"></div>
+    </header>
+
+    <div class="article-body prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-container {
+    max-width: var(--prose-max);
+    margin: 0 auto;
+    padding-bottom: var(--space-16);
+  }
+
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-dim);
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: var(--space-8);
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .article-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+    margin-bottom: var(--space-4);
+  }
+
+  .category-tag {
+    color: var(--color-accent);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .separator {
+    color: var(--color-border);
+  }
+
+  .article-title {
+    font-size: var(--text-3xl);
+    line-height: 1.2;
+    margin: 0 0 var(--space-4) 0;
+    color: var(--color-text);
+  }
+
+  .article-lead {
+    font-size: var(--text-lg);
+    color: var(--color-dim);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .header-divider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin-top: var(--space-6);
+  }
+
+  .prose {
+    color: var(--color-text);
+  }
+
+  .prose :global(h2), .prose :global(h3) {
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-4);
+    font-family: var(--font-sans);
+    color: var(--color-text);
+  }
+
+  .prose :global(p) {
+    margin-bottom: var(--space-6);
+  }
+</style>

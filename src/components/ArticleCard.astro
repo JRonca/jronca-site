@@ -1,0 +1,160 @@
+---
+import { type Locale, useTranslations, useTranslatedPath } from '../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+import { Clock } from '@lucide/astro';
+
+interface Props {
+  article: CollectionEntry<'artigos'>;
+  lang: Locale;
+}
+
+const { article, lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+};
+
+const getReadingTime = (body: string = '') => {
+  const wordsPerMinute = 200;
+  const wordCount = body.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const time = Math.ceil(wordCount / wordsPerMinute);
+  return `${time} ${t('article.readingTime')}`;
+};
+
+const readingTime = getReadingTime(article.body);
+const articleUrl = translatePath(`/artigos/${article.id.split('/').pop()}`);
+---
+
+<article class="article-card">
+  <div class="card-header">
+    <span class="category-tag">{article.data.category}</span>
+    <time class="card-date" datetime={article.data.pubDate.toISOString()}>
+      {formatDate(article.data.pubDate)}
+    </time>
+  </div>
+  
+  <h3 class="card-title">
+    <a href={articleUrl}>
+      {article.data.title}
+    </a>
+  </h3>
+  
+  <p class="card-description">
+    {article.data.description}
+  </p>
+
+  <div class="card-footer">
+    <span class="reading-time">
+      <Clock size={14} />
+      {readingTime}
+    </span>
+  </div>
+</article>
+
+<style>
+  .article-card {
+    position: relative;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .article-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(94, 242, 184, 0.05);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .category-tag {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    color: var(--color-accent);
+    background-color: rgba(94, 242, 184, 0.08);
+    border: 1px solid rgba(94, 242, 184, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .card-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: var(--text-lg);
+    line-height: 1.3;
+  }
+
+  .card-title a {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .card-title a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .article-card:hover .card-title a {
+    color: var(--color-accent);
+  }
+
+  .card-description {
+    color: var(--color-dim);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .reading-time {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+  }
+
+  .reading-time svg {
+    color: var(--color-dim);
+  }
+</style>

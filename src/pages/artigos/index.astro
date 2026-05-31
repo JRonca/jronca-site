@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { useTranslations } from '../../i18n/ui';
+
+const lang = 'pt';
+const t = useTranslations(lang);
+
+const articles = (await getCollection('artigos', ({ id, data }) => {
+  return id.startsWith('pt/') && !data.draft;
+})).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout 
+  title={t('nav.artigos')} 
+  description="Artigos sobre segurança, Kubernetes, DevOps, DevSecOps e desenvolvimento de sistemas." 
+  lang={lang}
+>
+  <div class="articles-container">
+    <header class="page-header">
+      <h1 class="page-title">{t('nav.artigos')}</h1>
+      <p class="page-subtitle">
+        Notas técnicas, guias de implementação e reflexões sobre arquitetura e infraestrutura resiliente.
+      </p>
+    </header>
+
+    <div class="articles-grid">
+      {articles.map(article => (
+        <ArticleCard article={article} lang={lang} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .articles-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-title {
+    margin-bottom: var(--space-2);
+  }
+
+  .page-subtitle {
+    color: var(--color-dim);
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  .articles-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+</style>

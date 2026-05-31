@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/ui';
+import { config } from '../../config';
+
+const lang = 'en';
+const t = useTranslations(lang);
+---
+
+<BaseLayout 
+  title={t('nav.sobre')} 
+  description="About Ronca — Backend, DevOps, and DevSecOps Engineer." 
+  lang={lang}
+>
+  <div class="about-container">
+    <header class="page-header">
+      <h1 class="page-title">{t('nav.sobre')}</h1>
+    </header>
+
+    <div class="about-content prose">
+      <p>
+        Hello. I am Ronca (JRonca). I work as a software engineer specializing in high-performance backend systems, cloud infrastructure architecture (DevOps), and continuous safety integration (DevSecOps).
+      </p>
+
+      <p>
+        My engineering philosophy revolves around simplicity, resiliency, and pragmatic automation. I believe that high-quality software should be well-documented, thoroughly tested, and built with clear boundaries of isolation and security.
+      </p>
+
+      <h2>Areas of Focus</h2>
+      
+      <div class="skills-grid">
+        <div class="skill-category">
+          <h3>Backend & Systems</h3>
+          <p>Development in Go, Rust, Python, and TypeScript. Focus on asynchronous APIs, microservices, and communication via gRPC / Message Brokers.</p>
+        </div>
+        
+        <div class="skill-category">
+          <h3>DevOps & Cloud</h3>
+          <p>Orchestration with Kubernetes (EKS, GKE, self-hosted), infrastructure as code (Terraform, Ansible), and robust CI/CD pipelines (GitHub Actions, GitLab CI).</p>
+        </div>
+
+        <div class="skill-category">
+          <h3>DevSecOps & Hardening</h3>
+          <p>Container audits and hardening, role-based access control (RBAC), network controls (Network Policies), and automated dependency analysis (SAST/DAST).</p>
+        </div>
+      </div>
+
+      <h2>Contact & Connections</h2>
+      <p>
+        I am always open to technical discussions, architecture talks, and chatting about the open-source ecosystem. Feel free to connect:
+      </p>
+
+      <ul class="contact-list">
+        <li>
+          <strong>GitHub:</strong> <a href={config.social.github} target="_blank" rel="noopener noreferrer">{config.social.githubUsername}</a>
+        </li>
+        <li>
+          <strong>LinkedIn:</strong> <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">{config.social.linkedinUsername}</a>
+        </li>
+        <li>
+          <strong>Email:</strong> <a href={`mailto:${config.social.email}`}>{config.social.email}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-container {
+    max-width: var(--prose-max);
+    margin: 0 auto;
+    padding-bottom: var(--space-16);
+  }
+
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .about-content h2 {
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-4);
+    font-size: var(--text-xl);
+    border-bottom: 1px dashed var(--color-border);
+    padding-bottom: var(--space-2);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin: var(--space-6) 0;
+  }
+
+  @media (min-width: 640px) {
+    .skills-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .skill-category {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+
+  .skill-category h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-base);
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+  }
+
+  .skill-category p {
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0;
+  }
+
+  .contact-list li {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .contact-list strong {
+    color: var(--color-text);
+  }
+</style>

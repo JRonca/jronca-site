@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations } from '../i18n/ui';
+import { config } from '../config';
+
+const lang = 'pt';
+const t = useTranslations(lang);
+---
+
+<BaseLayout 
+  title={t('nav.sobre')} 
+  description="Sobre Ronca — Engenheiro Backend, DevOps e DevSecOps." 
+  lang={lang}
+>
+  <div class="about-container">
+    <header class="page-header">
+      <h1 class="page-title">{t('nav.sobre')}</h1>
+    </header>
+
+    <div class="about-content prose">
+      <p>
+        Olá. Sou o Ronca (JRonca). Trabalho como engenheiro de software especializado no desenvolvimento de sistemas backend de alta performance, arquitetura de infraestrutura em nuvem (DevOps) e integração contínua de segurança (DevSecOps).
+      </p>
+
+      <p>
+        Minha filosofia de engenharia baseia-se em simplicidade, resiliência e automação pragmática. Acredito que o software de qualidade deve ser bem documentado, exaustivamente testado e construído com camadas claras de isolamento e segurança.
+      </p>
+
+      <h2>Áreas de Foco</h2>
+      
+      <div class="skills-grid">
+        <div class="skill-category">
+          <h3>Backend & Systems</h3>
+          <p>Desenvolvimento em Go, Rust, Python e TypeScript. Foco em APIs assíncronas, microsserviços e comunicação gRPC / Message Brokers.</p>
+        </div>
+        
+        <div class="skill-category">
+          <h3>DevOps & Cloud</h3>
+          <p>Orquestração com Kubernetes (EKS, GKE, self-hosted), infraestrutura como código (Terraform, Ansible) e pipelines robustos de CI/CD (GitHub Actions, GitLab CI).</p>
+        </div>
+
+        <div class="skill-category">
+          <h3>DevSecOps & Hardening</h3>
+          <p>Auditorias e hardening de contêineres, controle de acessos baseados em perfil (RBAC), controle de rede (Network Policies) e análise automatizada de dependências (SAST/DAST).</p>
+        </div>
+      </div>
+
+      <h2>Contato & Conexões</h2>
+      <p>
+        Estou sempre aberto a discussões técnicas, discussões sobre arquitetura e troca de ideias sobre o ecossistema open-source. Sinta-se à vontade para se conectar:
+      </p>
+
+      <ul class="contact-list">
+        <li>
+          <strong>GitHub:</strong> <a href={config.social.github} target="_blank" rel="noopener noreferrer">{config.social.githubUsername}</a>
+        </li>
+        <li>
+          <strong>LinkedIn:</strong> <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer">{config.social.linkedinUsername}</a>
+        </li>
+        <li>
+          <strong>Email:</strong> <a href={`mailto:${config.social.email}`}>{config.social.email}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-container {
+    max-width: var(--prose-max);
+    margin: 0 auto;
+    padding-bottom: var(--space-16);
+  }
+
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .about-content h2 {
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-4);
+    font-size: var(--text-xl);
+    border-bottom: 1px dashed var(--color-border);
+    padding-bottom: var(--space-2);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin: var(--space-6) 0;
+  }
+
+  @media (min-width: 640px) {
+    .skills-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .skill-category {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+
+  .skill-category h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-base);
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+  }
+
+  .skill-category p {
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0;
+  }
+
+  .contact-list li {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .contact-list strong {
+    color: var(--color-text);
+  }
+</style>

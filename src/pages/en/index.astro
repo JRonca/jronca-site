@@ -1,0 +1,242 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { useTranslations, useTranslatedPath } from '../../i18n/ui';
+import { getReposData } from '../../utils/github';
+
+const lang = 'en';
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+
+const articles = await getCollection('artigos', ({ id, data }) => {
+  return id.startsWith('en/') && !data.draft;
+});
+
+const featuredArticles = articles
+  .filter(a => a.data.featured)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const projects = await getCollection('projetos', ({ id }) => {
+  return id.startsWith('en/');
+});
+
+const featuredProjects = projects
+  .filter(p => p.data.featured)
+  .sort((a, b) => b.data.year - a.data.year)
+  .slice(0, 3);
+
+const repoNames = featuredProjects.map(p => p.data.repo).filter((r): r is string => !!r);
+const githubStats = await getReposData(repoNames);
+---
+
+<BaseLayout 
+  title="Home" 
+  description="Technical authority personal website of Ronca — Backend, DevOps, and DevSecOps Engineer." 
+  lang={lang}
+>
+  <section class="terminal-hero">
+    <div class="terminal-header">
+      <span class="terminal-dot red"></span>
+      <span class="terminal-dot yellow"></span>
+      <span class="terminal-dot green"></span>
+      <span class="terminal-title">bash</span>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-line">
+        <span class="prompt-user">jronca</span><span class="prompt-host">:~$</span> <span class="command">whoami</span>
+      </div>
+      <div class="terminal-output">
+        <p class="greeting-text">{t('home.terminal.greeting')}</p>
+        <p class="role-text">{t('home.terminal.role')}</p>
+      </div>
+      <div class="terminal-line">
+        <span class="prompt-user">jronca</span><span class="prompt-host">:~$</span> <span class="cursor">_</span>
+      </div>
+    </div>
+  </section>
+
+  {featuredArticles.length > 0 && (
+    <section class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">{t('home.featured.articles')}</h2>
+        <a href={translatePath('/artigos')} class="view-all-link">
+          {t('home.viewAll.articles')} <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="cards-grid">
+        {featuredArticles.map(article => (
+          <ArticleCard article={article} lang={lang} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {featuredProjects.length > 0 && (
+    <section class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">{t('home.featured.projects')}</h2>
+        <a href={translatePath('/projetos')} class="view-all-link">
+          {t('home.viewAll.projects')} <span class="arrow">→</span>
+        </a>
+      </div>
+      <div class="cards-grid">
+        {featuredProjects.map((project, index) => (
+          <ProjectCard 
+            project={project} 
+            index={index} 
+            gitHubData={project.data.repo ? githubStats[project.data.repo] : undefined} 
+            lang={lang} 
+          />
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .terminal-hero {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: var(--space-12);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .terminal-header {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .terminal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .terminal-dot.red { background-color: #ef4444; }
+  .terminal-dot.yellow { background-color: #f59e0b; }
+  .terminal-dot.green { background-color: #10b981; }
+
+  .terminal-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .terminal-body {
+    padding: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .terminal-line {
+    margin-bottom: var(--space-2);
+  }
+
+  .prompt-user {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .prompt-host {
+    color: var(--color-text);
+  }
+
+  .command {
+    color: var(--color-text);
+  }
+
+  .terminal-output {
+    padding: var(--space-4) 0 var(--space-4) var(--space-4);
+    border-left: 2px solid rgba(94, 242, 184, 0.15);
+    margin: var(--space-2) 0 var(--space-4) var(--space-2);
+  }
+
+  .greeting-text {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--space-2);
+    font-family: var(--font-sans);
+  }
+
+  .role-text {
+    color: var(--color-dim);
+    font-size: var(--text-base);
+    margin: 0;
+  }
+
+  .cursor {
+    color: var(--color-accent);
+    font-weight: bold;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    from, to { color: transparent; }
+    50% { color: var(--color-accent); }
+  }
+
+  .section-container {
+    margin-bottom: var(--space-12);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-6);
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: var(--text-xl);
+    font-family: var(--font-sans);
+  }
+
+  .view-all-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-dim);
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .view-all-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .view-all-link:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  .arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
