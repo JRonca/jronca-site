@@ -2,6 +2,8 @@ export const config = {
   author: 'Ronca',
   siteUrl: 'https://jronca.com',
   repoOwner: 'jronca',
+  defaultTitle: 'JRONCA',
+  defaultDescription: 'Conteúdo técnico sobre computação, sistemas e segurança.',
   social: {
     github: 'https://github.com/jronca',
     githubUsername: 'jronca',

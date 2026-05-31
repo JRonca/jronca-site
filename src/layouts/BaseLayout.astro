@@ -18,7 +18,7 @@ const {
   description,
   lang,
   canonical,
-  ogImage = '/og-image.png',
+  ogImage,
   type = 'website',
 } = Astro.props;
 
@@ -31,6 +31,15 @@ const altPath = isEn
   ? Astro.url.pathname.replace(/^\/en(\/|$)/, '/')
   : `/en${Astro.url.pathname === '/' ? '' : Astro.url.pathname}`;
 const altAbsoluteUrl = `${siteUrl}${altPath}`;
+
+const isArticle = type === 'article';
+const ogTitle = isArticle ? title : config.defaultTitle;
+const ogDescription = isArticle ? description : config.defaultDescription;
+
+// Resolve absolute ogImage URL
+const resolvedOgImage = isArticle && ogImage
+  ? (ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`)
+  : `${siteUrl}/og-default.png`;
 ---
 
 <!DOCTYPE html>
@@ -44,8 +53,8 @@ const altAbsoluteUrl = `${siteUrl}${altPath}`;
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0B0E14" />
     
-    <title>{title} | JRONCA</title>
-    <meta name="title" content={`${title} | JRONCA`} />
+    <title>{title} | {config.defaultTitle}</title>
+    <meta name="title" content={`${title} | ${config.defaultTitle}`} />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     
@@ -56,15 +65,17 @@ const altAbsoluteUrl = `${siteUrl}${altPath}`;
     
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={`${title} | JRONCA`} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:locale" content={lang === 'pt' ? 'pt_BR' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'pt' ? 'en_US' : 'pt_BR'} />
     
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalUrl} />
-    <meta property="twitter:title" content={`${title} | JRONCA`} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={resolvedOgImage} />
 
     <script is:inline>
       const getTheme = () => {
