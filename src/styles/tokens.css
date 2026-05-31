@@ -1,0 +1,97 @@
+/*
+ * JRONCA — Design Tokens & Fonts
+ */
+
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono.woff2') format('woff2');
+}
+
+:root {
+  --color-bg: #0b0e14;
+  --color-surface: #11151c;
+  --color-text: #c8d0da;
+  --color-dim: #7a8696;
+  --color-accent: #5ef2b8;
+  --color-border: #1e2530;
+
+  --font-sans: 'Chakra Petch', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --sidebar-width: 280px;
+  --prose-max: 68ch;
+  --radius: 8px;
+  --border-width: 1px;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-text: #1a2230;
+  --color-dim: #5a6678;
+  --color-accent: #0fa968;
+  --color-border: #d8dee8;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --color-bg: #f5f7fa;
+    --color-surface: #ffffff;
+    --color-text: #1a2230;
+    --color-dim: #5a6678;
+    --color-accent: #0fa968;
+    --color-border: #d8dee8;
+  }
+}
