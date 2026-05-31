@@ -16,6 +16,7 @@ const artigos = defineCollection({
       featured: z.boolean().default(false),
       heroImage: image().optional(),
       canonical: z.string().url().optional(),
+      mediumUrl: z.string().url().optional(),
     }),
 });
 

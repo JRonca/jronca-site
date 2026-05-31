@@ -76,6 +76,14 @@ const readingTime = getReadingTime(article.body);
     <div class="article-body prose">
       <Content />
     </div>
+
+    {article.data.mediumUrl && (
+      <div class="medium-link-block">
+        <a href={article.data.mediumUrl} target="_blank" rel="noopener noreferrer">
+          {t('article.medium')}
+        </a>
+      </div>
+    )}
   </article>
 </BaseLayout>
 
@@ -159,5 +167,25 @@ const readingTime = getReadingTime(article.body);
 
   .prose :global(p) {
     margin-bottom: var(--space-6);
+  }
+
+  .medium-link-block {
+    margin-top: var(--space-12);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .medium-link-block a {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-dim);
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .medium-link-block a:hover {
+    color: var(--color-accent);
+    text-decoration: none;
   }
 </style>
