@@ -1,0 +1,77 @@
+---
+import { Sun, Moon } from '@lucide/astro';
+---
+
+<button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+  <Sun class="sun-icon" size={20} />
+  <Moon class="moon-icon" size={20} />
+</button>
+
+<style>
+  .theme-toggle {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-dim);
+    cursor: pointer;
+    padding: var(--space-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    width: 40px;
+    height: 40px;
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background-color: rgba(94, 242, 184, 0.05);
+  }
+
+  .sun-icon {
+    display: block;
+  }
+  .moon-icon {
+    display: none;
+  }
+
+  :global(html[data-theme='light']) .sun-icon {
+    display: none;
+  }
+  :global(html[data-theme='light']) .moon-icon {
+    display: block;
+  }
+
+  .theme-toggle:active :global(svg) {
+    transform: scale(0.9);
+  }
+
+  :global(.theme-toggle svg) {
+    transition: transform 0.2s ease;
+  }
+</style>
+
+<script>
+  function initThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        const nextTheme = isLight ? 'dark' : 'light';
+        
+        if (nextTheme === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+        
+        localStorage.setItem('theme', nextTheme);
+      });
+    }
+  }
+
+  initThemeToggle();
+
+  document.addEventListener('astro:after-swap', initThemeToggle);
+</script>

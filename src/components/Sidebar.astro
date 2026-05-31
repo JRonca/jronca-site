@@ -1,0 +1,358 @@
+---
+import Logo from '../assets/brand/LOGO.svg?raw';
+import Logomark from '../assets/brand/logomark.svg?raw';
+import { useTranslations, useTranslatedPath, type Locale } from '../i18n/ui';
+import ThemeToggle from './ThemeToggle.astro';
+import { config } from '../config';
+import { Github, Linkedin, Mail } from '@lucide/astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+const { pathname } = Astro.url;
+
+const isActive = (path: string) => {
+  const currentPath = pathname.endsWith('/') && pathname !== '/' ? pathname.slice(0, -1) : pathname;
+  const translatedPath = translatePath(path);
+  const cleanTranslatedPath = translatedPath.endsWith('/') && translatedPath !== '/' ? translatedPath.slice(0, -1) : translatedPath;
+  
+  if (path === '/') {
+    return currentPath === '/' || currentPath === '/en' || currentPath === '/en/';
+  }
+  return currentPath === cleanTranslatedPath || currentPath.startsWith(cleanTranslatedPath + '/');
+};
+
+const homeUrl = translatePath('/');
+const artigosUrl = translatePath('/artigos');
+const projetosUrl = translatePath('/projetos');
+const sobreUrl = translatePath('/sobre');
+
+const isEn = lang === 'en';
+const altLang = isEn ? 'pt' : 'en';
+const altPath = isEn 
+  ? pathname.replace(/^\/en(\/|$)/, '/') 
+  : `/en${pathname === '/' ? '' : pathname}`;
+const finalAltPath = altPath === '' ? '/' : altPath;
+---
+
+<input type="checkbox" id="menu-toggle" class="menu-checkbox visually-hidden" />
+
+<header class="mobile-header">
+  <a href={homeUrl} class="mobile-logo" aria-label="JRONCA Home">
+    <Fragment set:html={Logomark} />
+  </a>
+  <label for="menu-toggle" class="hamburger-label" aria-label="Toggle menu">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </label>
+</header>
+
+<aside class="sidebar">
+  <div class="sidebar-top">
+    <a href={homeUrl} class="sidebar-logo" aria-label="JRONCA Home">
+      <Fragment set:html={Logo} />
+    </a>
+    
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a href={homeUrl} class={isActive('/') ? 'active' : ''}>
+            <span class="nav-bracket">[</span>{t('nav.home')}<span class="nav-bracket">]</span>
+          </a>
+        </li>
+        <li>
+          <a href={artigosUrl} class={isActive('/artigos') ? 'active' : ''}>
+            <span class="nav-bracket">[</span>{t('nav.artigos')}<span class="nav-bracket">]</span>
+          </a>
+        </li>
+        <li>
+          <a href={projetosUrl} class={isActive('/projetos') ? 'active' : ''}>
+            <span class="nav-bracket">[</span>{t('nav.projetos')}<span class="nav-bracket">]</span>
+          </a>
+        </li>
+        <li>
+          <a href={sobreUrl} class={isActive('/sobre') ? 'active' : ''}>
+            <span class="nav-bracket">[</span>{t('nav.sobre')}<span class="nav-bracket">]</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-social">
+      <a href={config.social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <Github size={20} />
+      </a>
+      <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <Linkedin size={20} />
+      </a>
+      <a href={`mailto:${config.social.email}`} aria-label="Email">
+        <Mail size={20} />
+      </a>
+    </div>
+
+    <div class="sidebar-actions">
+      <ThemeToggle />
+
+      <div class="lang-selector">
+        {isEn ? (
+          <a href={finalAltPath} class="lang-link" title="Mudar para Português">PT</a>
+        ) : (
+          <span class="lang-active">PT</span>
+        )}
+        <span class="lang-separator">/</span>
+        {isEn ? (
+          <span class="lang-active">EN</span>
+        ) : (
+          <a href={finalAltPath} class="lang-link" title="Switch to English">EN</a>
+        )}
+      </div>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    padding: var(--space-8) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    display: block;
+    margin-bottom: var(--space-12);
+    color: var(--color-text);
+  }
+
+  .sidebar-logo :global(svg) {
+    width: 100%;
+    height: auto;
+    max-width: 180px;
+  }
+
+  .sidebar-logo :global(path[style*="fill:#c6cad6"]) {
+    fill: var(--color-text) !important;
+  }
+
+  .sidebar-logo :global(path[style*="fill:#71f2b2"]) {
+    fill: var(--color-accent) !important;
+  }
+
+  .sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-nav li {
+    margin-bottom: var(--space-4);
+  }
+
+  .sidebar-nav a {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-dim);
+    font-size: var(--text-lg);
+    font-weight: 500;
+    transition: color 0.2s ease;
+    padding: var(--space-1) 0;
+  }
+
+  .sidebar-nav a:hover {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .sidebar-nav a.active {
+    color: var(--color-accent);
+  }
+
+  .nav-bracket {
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+  }
+
+  .nav-bracket:first-child {
+    margin-right: var(--space-2);
+    transform: translateX(4px);
+  }
+
+  .nav-bracket:last-child {
+    margin-left: var(--space-2);
+    transform: translateX(-4px);
+  }
+
+  .sidebar-nav a.active .nav-bracket,
+  .sidebar-nav a:hover .nav-bracket {
+    opacity: 0.8;
+    transform: translateX(0);
+  }
+
+  .sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .sidebar-social {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .sidebar-social a {
+    color: var(--color-dim);
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-social a:hover {
+    color: var(--color-accent);
+  }
+
+  .sidebar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-4);
+  }
+
+  .lang-selector {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  .lang-active {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .lang-link {
+    color: var(--color-dim);
+    transition: color 0.2s ease;
+  }
+
+  .lang-link:hover {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .lang-separator {
+    color: var(--color-border);
+    margin: 0 var(--space-2);
+  }
+
+  .mobile-header {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 60px);
+      background-color: var(--color-surface);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-8) var(--space-6);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .menu-checkbox:checked ~ .sidebar {
+      transform: translateX(0);
+    }
+
+    .sidebar-logo {
+      display: none;
+    }
+
+    .mobile-header {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-6);
+      z-index: 110;
+    }
+
+    .mobile-logo {
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      height: 32px;
+    }
+
+    .mobile-logo :global(svg) {
+      height: 100%;
+      width: auto;
+      max-height: 28px;
+    }
+
+    .mobile-logo :global(path) {
+      fill: var(--color-accent) !important;
+    }
+
+    .hamburger-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 24px;
+      height: 16px;
+      cursor: pointer;
+      z-index: 120;
+    }
+
+    .hamburger-line {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: var(--color-text);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .menu-checkbox:checked ~ .mobile-header .hamburger-line:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background-color: var(--color-accent);
+    }
+
+    .menu-checkbox:checked ~ .mobile-header .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-checkbox:checked ~ .mobile-header .hamburger-line:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background-color: var(--color-accent);
+    }
+  }
+</style>

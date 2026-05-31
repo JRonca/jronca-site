@@ -1,0 +1,150 @@
+---
+import '../styles/global.css';
+import Sidebar from '../components/Sidebar.astro';
+import { type Locale } from '../i18n/ui';
+import { config } from '../config';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Locale;
+  canonical?: string;
+  ogImage?: string;
+  type?: 'website' | 'article';
+}
+
+const {
+  title,
+  description,
+  lang,
+  canonical,
+  ogImage = '/og-image.png',
+  type = 'website',
+} = Astro.props;
+
+const siteUrl = config.siteUrl;
+const canonicalUrl = canonical || `${siteUrl}${Astro.url.pathname}`;
+
+const isEn = lang === 'en';
+const altLang = isEn ? 'pt' : 'en';
+const altPath = isEn
+  ? Astro.url.pathname.replace(/^\/en(\/|$)/, '/')
+  : `/en${Astro.url.pathname === '/' ? '' : Astro.url.pathname}`;
+const altAbsoluteUrl = `${siteUrl}${altPath}`;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0B0E14" />
+    
+    <title>{title} | JRONCA</title>
+    <meta name="title" content={`${title} | JRONCA`} />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang={lang} href={canonicalUrl} />
+    <link rel="alternate" hreflang={altLang} href={altAbsoluteUrl} />
+    <link rel="alternate" hreflang="x-default" href={isEn ? altAbsoluteUrl : canonicalUrl} />
+    
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={`${title} | JRONCA`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalUrl} />
+    <meta property="twitter:title" content={`${title} | JRONCA`} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImage} />
+
+    <script is:inline>
+      const getTheme = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+          return 'light';
+        }
+        return 'dark';
+      };
+      
+      const theme = getTheme();
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app-layout">
+      <Sidebar lang={lang} />
+      
+      <main id="main-content" class="main-content">
+        <div class="content-wrapper">
+          <slot />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  .app-layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: var(--space-12) var(--space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: calc(100% - var(--sidebar-width));
+  }
+
+  .content-wrapper {
+    width: 100%;
+    max-width: 900px;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .app-layout {
+      flex-direction: column;
+    }
+
+    .main-content {
+      margin-left: 0;
+      padding: var(--space-8) var(--space-4);
+      padding-top: calc(60px + var(--space-8));
+      width: 100%;
+    }
+    
+    .content-wrapper {
+      max-width: 100%;
+    }
+  }
+</style>
