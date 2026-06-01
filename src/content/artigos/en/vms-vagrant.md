@@ -12,14 +12,14 @@ system different from yours, or reproduce a server environment to validate an id
 what you're after is a virtual machine. This article covers the concept, why
 Vagrant exists, and a reproducible lab you can spin up with a single command.
 
-There's no installation walkthrough here — the official documentation does that
+There's no installation walkthrough here, the official documentation does that
 better, and the links are at the end. The focus is understanding what each piece
 does and having a working `Vagrantfile` for reference.
 
 ## What a virtual machine is
 
 A virtual machine (VM) is a complete computer simulated in software, running inside
-your real computer. It has its own disk, its own memory, its own operating system —
+your real computer. It has its own disk, its own memory, its own operating system,
 all virtualized. To the software running inside it, it's like real hardware; to
 your system, it's just another process.
 
@@ -36,7 +36,7 @@ resources (CPU, memory, disk) among them. There are two types:
 - **Type 1 (bare-metal):** runs directly on the hardware, with no operating system
   underneath. It's the server and cloud model. KVM (on Linux), VMware ESXi, and Xen
   are examples. Proxmox VE is the accessible entry point to this world: a
-  distribution that delivers KVM with a web interface, clustering, and backups —
+  distribution that delivers KVM with a web interface, clustering, and backups,
   widely used in homelabs precisely because it brings server-grade virtualization
   to the hardware you already have at home.
 - **Type 2 (hosted):** runs as an application on top of your operating system. It's
@@ -44,7 +44,7 @@ resources (CPU, memory, disk) among them. There are two types:
 
 Modern virtualization relies on processor extensions (Intel VT-x or AMD-V) that
 allow VMs to run with near-native performance. Without them, emulation would be
-software-based — far too slow for practical use.
+software-based, far too slow for practical use.
 
 ## The problem Vagrant solves
 
@@ -53,7 +53,7 @@ configure networking, adjust resources, install dependencies. If you need anothe
 identical one, you do it all over again. If you need to share that environment with
 someone, you send a multi-gigabyte file and hope it works on the other machine.
 
-Vagrant tackles exactly this. It's not a virtualizer — it's an automation layer
+Vagrant tackles exactly this. It's not a virtualizer, it's an automation layer
 **on top of** the virtualizers (VirtualBox, VMware, libvirt/KVM, and others). You
 describe the VM you want in a text file, the `Vagrantfile`, and Vagrant creates
 everything with one command. The environment becomes code: versionable, shareable,
@@ -61,7 +61,7 @@ and identical for anyone who runs the same file.
 
 ## The Vagrantfile
 
-The `Vagrantfile` is written in Ruby, but you don't need to know Ruby to use it —
+The `Vagrantfile` is written in Ruby, but you don't need to know Ruby to use it,
 the structure is declarative. This is a working example that boots an Ubuntu,
 configures networking and resources, and installs nginx automatically:
 
@@ -90,7 +90,7 @@ end
 ```
 
 Each block has a role: `config.vm.box` defines the base system; the `provider`
-block sets CPU and memory; the `provision` block runs commands on creation — this
+block sets CPU and memory; the `provision` block runs commands on creation, this
 is where "environment as code" happens, installing what you need without manual
 interaction.
 
@@ -116,24 +116,24 @@ environment.
 The provider is the virtualizer Vagrant drives underneath. The choice has practical
 implications worth noting:
 
-- **VirtualBox** — free and cross-platform (Windows, macOS, Linux). It's Vagrant's
+- **VirtualBox**: free and cross-platform (Windows, macOS, Linux). It's Vagrant's
   default provider and the lowest-friction one to start with.
-- **VMware (Workstation/Fusion)** — requires the `vagrant-vmware-desktop` plugin and
+- **VMware (Workstation/Fusion)**: requires the `vagrant-vmware-desktop` plugin and
   the VMware Utility. It has better support for graphical and 3D features, useful
   for VMs with a desktop. In recent versions, linked clone may run into snapshot
   limitations depending on the edition/version; when that happens,
   `linked_clone = false` forces a full clone and works around it.
-- **libvirt/KVM** — the native path on Linux. Near bare-metal performance, with no
+- **libvirt/KVM**: the native path on Linux. Near bare-metal performance, with no
   third-party virtualizer. Requires the `vagrant-libvirt` plugin. Needs the
   processor's virtualization extensions (VT-x/AMD-V) enabled.
-- **Proxmox VE** — if you already run a Proxmox server, community plugins let
+- **Proxmox VE**: if you already run a Proxmox server, community plugins let
   Vagrant provision VMs directly on it, taking the same "environment as code"
   concept to the homelab hypervisor instead of the local machine. It's the natural
   step when the lab grows and moves off the desktop to a dedicated server.
 
 A note on coexistence: VMware and KVM can live installed on the same machine, with
 the caveat of not competing for hardware virtualization by running both heavy
-hypervisors at the same time. Networking doesn't conflict — each uses its own
+hypervisors at the same time. Networking doesn't conflict, each uses its own
 interfaces. VirtualBox and KVM, on the other hand, compete for the same kernel
 modules and won't run VMs simultaneously without module management.
 
@@ -142,11 +142,11 @@ modules and won't run VMs simultaneously without module management.
 Understanding VMs and environment automation is the foundation of nearly everything
 in modern infrastructure: containers (the next step, lighter), CI/CD, server
 provisioning, reproducible labs. Vagrant is a concrete entry point to the concept
-of "infrastructure as code" — the idea that environments should be described in
+of "infrastructure as code", the idea that environments should be described in
 versionable files, not assembled by hand.
 
 The natural next step from here is containers, which deliver isolation without
-carrying a full operating system per VM — a topic for another article.
+carrying a full operating system per VM, a topic for another article.
 
 ## References
 
