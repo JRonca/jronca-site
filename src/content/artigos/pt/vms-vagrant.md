@@ -3,6 +3,8 @@ title: "Máquinas Virtuais e Vagrant: do conceito ao ambiente como código"
 description: "O que é virtualização, como o Vagrant automatiza VMs, e um lab prático reproduzível."
 pubDate: 2026-06-01
 category: devops
+relatedVideo: "https://www.youtube.com/watch?v=n-IYGY9jlyY&t=11s"
+mediumUrl: "https://medium.com/@jrfr21112000/m%C3%A1quinas-virtuais-e-vagrant-do-conceito-ao-ambiente-como-c%C3%B3digo-7ef7c3e41c38"
 tags: ["vagrant", "virtualizacao", "vms", "devops", "infra"]
 featured: true
 ---
